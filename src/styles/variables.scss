@@ -1,11 +1,36 @@
-$color-primary-dark: #006769;
-$color-primary: #40a578;
-$color-accent-light: #9dde8b;
-$color-accent-pale: #e6ff94;
-$color-text-dark: #333333;
-$color-text-light: #ffffff;
-$color-bg-primary: #e6ff94;
-$color-bg-secondary: #9dde8b;
+@import url("https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+
+body {
+  font-family: "Funnel Sans", sans-serif;
+}
+
+$color-peach: #fec4be;
+$color-apricot: #feca7e;
+$color-yellow: #fbf06b;
+$color-green: #add773;
+$color-mint: #94cea8;
+
+$color-peach-alpha: #fec4be2b;
+$color-apricot-alpha: #feca7e45;
+$color-yellow-alpha: #fbf06b45;
+$color-green-alpha: #add77340;
+$color-mint-alpha: #94cea808;
+$gradient-soft-spectrum: linear-gradient(
+  135deg,
+  $color-peach-alpha 0%,
+  $color-apricot-alpha 25%,
+  $color-yellow-alpha 50%,
+  $color-green-alpha 75%,
+  $color-mint-alpha 100%
+);
+$gradient-spectrum: linear-gradient(
+  135deg,
+  $color-peach 0%,
+  $color-apricot 25%,
+  $color-yellow 50%,
+  $color-green 75%,
+  $color-mint 100%
+);
 
 * {
   box-sizing: border-box;
@@ -13,4 +38,90 @@ $color-bg-secondary: #9dde8b;
 body,
 #app {
   margin: 0;
+}
+.flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.next-button {
+  background: transparent;
+  outline: none;
+  border: none;
+  height: 40px;
+  display: flex;
+  width: 40px;
+  flex-direction: column;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  border-radius: 50%;
+  padding: 10px;
+  cursor: pointer;
+  & img {
+    height: 32px;
+  }
+  &:hover {
+    background: lightgray;
+  }
+}
+.backward {
+  transform: rotate(180deg);
+}
+input {
+  outline: none;
+  border: navajowhite;
+  padding: 6px 10px;
+  font-size: 16px;
+  border-radius: 20px;
+  background: $color-green-alpha;
+}
+.wrap {
+  flex-wrap: wrap;
+}
+.no-wrap {
+  flex-wrap: nowrap;
+}
+.shows-wrapper {
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  overflow: auto;
+  padding: 0px 20px;
+  margin: 4px 0px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+h1,
+h2 {
+  margin: 0px;
+}
+p {
+  margin: 4px;
+}
+a {
+  text-decoration: none;
+  color: BLACK;
+}
+p {
+  font-size: 16px;
+}
+@media screen and (max-width: 620px) {
+  h2 {
+    margin: 4px;
+    font-size: 20px;
+  }
+  h1 {
+    font-size: 24px;
+  }
+  p {
+    font-size: 12px;
+  }
 }

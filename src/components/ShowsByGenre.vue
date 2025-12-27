@@ -1,45 +1,77 @@
 <template>
   <div>
-    <h2>{{ genre }}</h2>
+    <div class="flex-row">
+      <div class="flex-row wrapper">
+        <button
+          class="next-button backward"
+          v-if="selectedGenre"
+          @click="selectGenre(null)"
+        >
+          <img src="../assets/arrow.svg" alt="next" />
+        </button>
+        <h2>{{ genre }}</h2>
+        <button
+          class="next-button"
+          v-if="!selectedGenre"
+          @click="selectGenre(genre)"
+        >
+          <img src="../assets/arrow.svg" alt="next" />
+        </button>
+      </div>
+    </div>
     <!-- {{ $store.state.showsByGenre[genre] }} -->
-    <div class="shows-wrapper">
-      <ShowCard v-for="showId in shows" :key="showId" :id="showId" />
+
+    <div :class="['shows-wrapper', [wrap ? 'wrap' : 'no-wrap']]">
+      <ShowCard
+        v-for="showId in shows"
+        :key="showId"
+        :id="showId"
+        :genre="genre"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import ShowCard from "./ShowCard.vue";
+import { mapState } from 'vuex'
+
+import ShowCard from './ShowCard.vue'
 export default {
   components: { ShowCard },
-  name: "ShowsByGenre",
+  name: 'ShowsByGenre',
   props: {
     genre: String,
+    wrap: Boolean
   },
-  data() {
+  data () {
     return {
-      shows: null,
-    };
+      showAll: false
+    }
   },
   computed: {
-    ...mapGetters(["getShowsByGenre"]),
+    ...mapState(['showsByGenre', 'selectedGenre']),
+
+    shows () {
+      return this.selectedGenre && this.showAll
+        ? this.showsByGenre[this.genre]
+        : [...this.showsByGenre[this.genre].slice(0, 10)]
+    }
   },
-  mounted() {
-    this.shows = this.getShowsByGenre(this.genre);
+  mounted () {
+    setTimeout(() => {
+      this.showAll = true
+    }, 200)
   },
-};
+  methods: {
+    selectGenre (genre) {
+      this.$store.commit('SELECT_GENRE', genre)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-.shows-wrapper {
-  display: flex;
-  flex-direction: row;
-  gap: 20px;
-  overflow: auto;
-  padding: 0px 20px;
-  margin: 4px 0px;
-  scrollbar-width: none; /* For Firefox */
-  -ms-overflow-style: none;
+.wrapper {
+  margin-left: 20px;
 }
 </style>

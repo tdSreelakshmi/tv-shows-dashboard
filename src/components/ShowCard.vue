@@ -1,62 +1,142 @@
 <template>
-  <div class="show-card" @focus="console.log('focus')">
-    <img :src="showInfo.image.medium" alt="" />
-    <p>
-      {{ showInfo.name }}
-    </p>
+  <div
+    :id="`card-${genre}-${id}`"
+    class="show-card"
+    @click="$router.push(`/show/${id ?? this.showInfo.id}`)"
+  >
+    <img
+      v-if="showImage"
+      width="160"
+      @load="loaded = true"
+      :src="showInfo.image['medium']"
+      alt=""
+    />
+    <ImageLoader v-else />
+    <span v-if="showInfo.rating.average">
+      {{ showInfo.rating.average }}
+    </span>
+    <div class="text">
+      <p>
+        {{ showInfo?.name }}
+      </p>
+      <!-- <p v-if="expandDetails">
+        {{ showInfo.language }}
+      </p>
+      <p v-if="expandDetails">
+        {{ showInfo.rating.average }}
+      </p>
+      <p v-if="expandDetails">
+        {{ showInfo.network?.country.name }}
+      </p> -->
+    </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapState } from 'vuex'
+import ImageLoader from './loaders/ImageLoader.vue'
 
 export default {
-  name: "ShowCard",
+  components: { ImageLoader },
+  name: 'ShowCard',
   props: {
     id: Number,
+    show: Object,
+    genre: String
   },
-  data() {
+  data () {
     return {
       showInfo: null,
-    };
+      expandDetails: false,
+      position: 0,
+      loaded: false
+    }
   },
   computed: {
-    ...mapGetters(["getShowById"]),
+    ...mapGetters(['getShowById']),
+    ...mapState(['scrollPosition', 'screenHeight']),
+    showImage () {
+      return (
+        this.showInfo?.image?.medium &&
+        this.position > this.scrollPosition - 400 &&
+        this.position < this.scrollPosition + this.screenHeight
+      )
+    }
   },
-  created() {
-    this.showInfo = this.getShowById(this.id);
+  created () {
+    if (this.id) this.showInfo = this.getShowById(this.id)
+    else this.showInfo = this.show
   },
-};
+  mounted () {
+    const card = document.getElementById(`card-${this.genre}-${this.id}`)
+    this.position = card.offsetTop
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 .show-card {
   display: flex;
   flex-direction: column;
-  width: 120px;
-  background: black;
-  box-shadow: 0px 0px 6px 1px $color-accent-pale;
-  border-radius: 8px;
   height: fit-content;
+  justify-content: space-between;
+  background: black;
+  box-shadow: 0px 0px 6px 1px $color-mint-alpha;
+  border-radius: 8px;
   align-items: center;
   margin: 16px 4px;
+  position: relative;
+  width: 160px;
+  min-width: 160px;
+  min-height: 275px;
+  height: auto;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+  &:hover {
+    transform: translateY(-4px);
+  }
 }
+
 img {
   border-radius: 8px 8px 0px 0px;
-  width: 120px;
+  width: 160px;
+
   height: auto;
 }
+.text {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 p {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 120px;
-  margin: 16px 8px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 120px;
-  margin: 16px 4px;
+  color: white;
   text-align: center;
+}
+span {
+  position: absolute;
+  height: auto;
+  background: white;
+  padding: 4px;
+  width: auto;
+  border-radius: 0px 6px 0px 6px;
+  right: 0;
+  font-size: 12px;
+}
+@media screen and (max-width: 620px) {
+  .show-card {
+    margin: 4px;
+    min-width: 100px;
+
+    width: 100px;
+    min-height: 180px;
+  }
+  .text {
+    margin: 8px 4px;
+  }
+  img {
+    width: 100px;
+  }
 }
 </style>

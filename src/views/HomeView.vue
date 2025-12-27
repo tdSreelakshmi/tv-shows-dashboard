@@ -1,31 +1,41 @@
 <template>
-  <div class="home">
-    <DashboardHeader />
-    <div v-for="genre in getGenres" :key="genre">
-      <ShowsByGenre :genre="genre" />
+  <div class="home" id="home" @scroll="onScroll">
+    <ShowsByGenre v-if="selectedGenre" :genre="selectedGenre" :wrap="true" />
+
+    <div v-else>
+      <div v-for="genre in getGenres" :key="genre">
+        <ShowsByGenre :genre="genre" />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import DashboardHeader from "@/components/DashboardHeader.vue";
-import { mapGetters } from "vuex";
-import ShowsByGenre from "@/components/ShowsByGenre.vue";
+import DashboardHeader from '@/components/DashboardHeader.vue'
+import { mapGetters, mapState } from 'vuex'
+
+import ShowsByGenre from '@/components/ShowsByGenre.vue'
 export default {
-  name: "HomeView",
+  name: 'HomeView',
   components: { DashboardHeader, ShowsByGenre },
   computed: {
-    ...mapGetters(["getGenres"]),
+    ...mapGetters(['getGenres']),
+    ...mapState(['selectedGenre'])
   },
-  created() {
-    this.getShows();
+  mounted () {
+    console.log('mounted')
+    const appElement = document.getElementById('app')
+    appElement.addEventListener('scroll', this.onScroll, { passive: true })
+  },
+  beforeUnmount () {
+    window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
-    getShows() {
-      this.$store.dispatch("getShows");
-    },
-  },
-};
+    onScroll (event) {
+      this.$store.commit('SET_SCROLL_POSTION', event.target.scrollTop)
+    }
+  }
+}
 </script>
 <style lang="scss" scoped>
 .home {
@@ -33,6 +43,6 @@ export default {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  padding: 80px 5% 20px 5%;
+  padding: 0px 0px;
 }
 </style>
