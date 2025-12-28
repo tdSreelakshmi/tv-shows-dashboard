@@ -1,28 +1,28 @@
 <template>
   <div v-if="showInfo && images" class="show-details">
-    <div class="img-container">
-      <Transition name="fade"
-        ><img
-          class="show-image"
-          v-if="currentImage"
-          :src="images[currentImage - 1]"
-          alt=""
-      /></Transition>
-    </div>
-
-    <div class="show-description">
-      <div>
-        <div class="flex-row">
-          <h1>
-            {{ showInfo.name }}
-          </h1>
-          <p class="flex-row">
-            <img src="../assets/star.svg" alt="rating" />
-            {{ showInfo.rating.average }}/10
-          </p>
-        </div>
+    <div class="basic-info">
+      <div class="img-container">
+        <Transition name="fade"
+          ><img
+            class="show-image"
+            v-if="currentImage"
+            :src="images[currentImage - 1]"
+            alt=""
+        /></Transition>
       </div>
-      <div class="info-wrapper" v-if="selectedTab == 'info'">
+
+      <div class="show-description">
+        <div>
+          <div class="title">
+            <h1>
+              {{ showInfo.name }}
+            </h1>
+            <p class="rating">
+              <img src="../assets/star.svg" alt="rating" />
+              {{ showInfo.rating.average }}/10
+            </p>
+          </div>
+        </div>
         <div class="genres">
           <p class="names" v-for="(name, idx) in akas" :key="idx">
             {{ name }}
@@ -52,6 +52,8 @@
           <p class="chips blue">
             {{ showInfo.language }}
           </p>
+          <p class="chips blue">{{ getShowYearRange }}</p>
+
           <p class="chips blue">{{ showInfo.averageRuntime }} mins</p>
         </div>
 
@@ -65,178 +67,129 @@
           Watch Now
         </button>
       </div>
-
-      <div
-        v-else-if="selectedTab == 'info' && casts.length > 0"
-        class="cast-container"
-      >
-        <div
-          v-for="cast in casts"
-          :key="cast.person.id"
-          @click="selectPerson(cast.person.id)"
-        >
-          <img
-            class="cast-img"
-            :src="cast?.character.image?.medium ?? cast?.person.image?.medium"
-            alt="cast"
-          />
-
-          <p class="cast-text">
-            {{ cast?.person.name }} <span>as {{ cast?.character.name }}</span>
-          </p>
-        </div>
-      </div>
     </div>
+    <ShowSeasons :id="id" />
+    <ShowCast :id="id" />
+
     <ShowsByPerson v-if="selectedPerson" :id="selectedPerson" />
   </div>
 </template>
 
 <script>
-import ShowsByPerson from '@/components/show/ShowsByPerson.vue'
-import { mapGetters, mapState } from 'vuex'
+import ShowsByPerson from "@/components/show/ShowsByPerson.vue";
+import ShowSeasons from "@/components/ShowSeasons.vue";
+import { mapGetters, mapState } from "vuex";
+import ShowCast from "@/components/ShowCast.vue";
 
 export default {
-  components: { ShowsByPerson },
-  name: 'ShowDetails',
+  components: { ShowsByPerson, ShowSeasons, ShowCast },
+  name: "ShowDetails",
   props: {
-    id: String
+    id: String,
   },
-  data () {
+  data() {
     return {
       showInfo: null,
       images: null,
-      currentImage: 1,
-      casts: [],
+      currentImage: 0,
       akas: null,
       selectedPerson: null,
-      selectedTab: 'info'
-    }
+      imageInterval: null,
+    };
+  },
+  unmounted() {
+    clearInterval(this.imageInterval);
   },
   computed: {
-    ...mapGetters(['getShowById']),
-    ...mapState(['loaded'])
-  },
-  created () {
-    this.$store.commit('SET_SEARCH', false)
+    ...mapGetters(["getShowById"]),
+    ...mapState(["loaded"]),
+    getShowYearRange() {
+      const startYear = this.showInfo.premiered
+        ? this.showInfo.premiered.split("-")[0]
+        : null;
 
+      if (!startYear) return null;
+
+      const endYear = this.showInfo.ended
+        ? this.showInfo.ended.split("-")[0]
+        : "Present";
+
+      return `${startYear} - ${endYear}`;
+    },
+  },
+  created() {
     if (this.loaded) {
-      this.showInfo = this.getShowById(this.id)
+      this.showInfo = this.getShowById(this.id);
       if (!this.showInfo) {
-        this.getShow()
+        this.getShow();
       }
     } else {
-      this.getShow()
+      this.getShow();
     }
-    this.getShowImages()
-    this.getShowCast()
-    this.getShowAkas()
+    this.getShowImages();
+    this.getShowAkas();
   },
   methods: {
-    openOfficialSite () {
-      window.open(this.showInfo.officialSite)
+    openOfficialSite() {
+      window.open(this.showInfo.officialSite);
     },
-    selectPerson (id) {
-      this.selectedPerson = id
+    selectPerson(id) {
+      this.selectedPerson = id;
     },
-    async getShowAkas () {
+    async getShowAkas() {
       try {
-        this.akas = await this.$store.dispatch('showAkas', this.id)
+        this.akas = await this.$store.dispatch("showAkas", this.id);
       } catch (error) {}
     },
-    async getShow () {
+    async getShow() {
       try {
         this.showInfo = this.casts = await this.$store.dispatch(
-          'getShow',
+          "getShow",
           this.id
-        )
+        );
       } catch (error) {}
     },
-    async getShowCast () {
-      try {
-        this.casts = await this.$store.dispatch('getShowCast', this.id)
-      } catch (error) {}
-    },
-    async getShowImages () {
-      try {
-        this.images = await this.$store.dispatch('getShowImages', this.id)
-        this.imageTimer()
-      } catch (error) {}
-    },
-    imageTimer () {
-      if (!this.images) return
-      setInterval(() => {
-        const next =
-          this.currentImage < this.images.length ? this.currentImage + 1 : 1
-        this.currentImage = null
-        const img = new Image()
-        img.src = this.images[next - 1]
 
-        img.onload = () => {
-          setTimeout(() => {
-            this.currentImage = next
-          }, 400)
-        }
-      }, 5000)
-    }
+    async getShowImages() {
+      try {
+        this.images = await this.$store.dispatch("getShowImages", this.id);
+        this.imageTimer();
+      } catch (error) {}
+    },
+    setAndGetImage() {
+      const next =
+        this.currentImage < this.images.length ? this.currentImage + 1 : 1;
+      this.currentImage = null;
+      const img = new Image();
+      img.src = this.images[next - 1];
+
+      img.onload = () => {
+        this.currentImage = next;
+      };
+    },
+    imageTimer() {
+      if (!this.images) return;
+      this.setAndGetImage();
+      this.imageInterval = setInterval(() => {
+        this.setAndGetImage();
+      }, 5000);
+    },
   },
-  watch: {
-    loaded (value) {
-      if (value) {
-        this.showInfo = this.getShowById(this.id)
-      }
-    }
-  }
-}
+};
 </script>
 
 <style lang="scss" scoped>
-.info-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 16px;
-}
-.cast-container div {
+.basic-info {
   display: flex;
   flex-direction: row;
-  font-size: x-small;
-  margin: 4px;
-  gap: 4px;
-  align-items: center;
-  background: $color-yellow-alpha;
-  border-radius: 10px;
-  box-shadow: 0px 0px 6px 1px $color-mint;
-  transition: all 0.5s cubic-bezier(0.445, 0.05, 0.55, 0.95);
-  cursor: pointer;
-  &:hover {
-    scale: 1.3;
-    background: $color-yellow;
-  }
+  align-items: flex-start;
 }
+
 .names:not(:last-child)::after {
   content: "|";
   margin-left: 10px;
 }
-.cast-text {
-  display: flex;
-  flex-direction: column;
-  font-size: x-small;
-  width: 80px;
-  align-items: center;
-  text-align: center;
-  span {
-    font-style: italic;
-  }
-}
-.cast-container {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-}
-.cast-img {
-  height: 60px;
-  border-radius: 10px;
-}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s ease, transform 0.7s ease;
@@ -253,15 +206,15 @@ export default {
 
 .show-details {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  overflow: auto;
   padding: 20px 5%;
 }
 .img-container {
   width: 30vw;
-  height: 100%;
+  height: 50vh;
 }
 .show-image {
   width: auto;
@@ -274,12 +227,28 @@ export default {
   padding-left: 20px;
   max-width: 1024px;
   width: 100%;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+.title,
+.rating {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.title {
+  gap: 16px;
+  & .rating {
+    gap: 4px;
+  }
 }
 .genres {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  justify-content: center;
 }
 .chips {
   padding: 4px 12px;
@@ -302,7 +271,15 @@ export default {
   place-self: center;
   background: $color-green;
 }
+
 @media screen and (max-width: 1024px) {
+  .basic-info {
+    flex-direction: column;
+    align-items: center;
+  }
+  .show-description {
+    align-items: center;
+  }
   .show-details {
     flex-direction: column;
     height: auto;
@@ -321,6 +298,13 @@ export default {
   }
   .show-description {
     padding: 20px 0px;
+  }
+  .info-wrapper {
+    align-items: center;
+  }
+  .title {
+    flex-direction: column;
+    gap: 8px;
   }
 }
 </style>

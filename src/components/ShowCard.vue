@@ -6,6 +6,7 @@
   >
     <img
       v-if="showImage"
+      loading="lazy"
       width="160"
       @load="loaded = true"
       :src="showInfo.image['medium']"
@@ -33,45 +34,45 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
-import ImageLoader from './loaders/ImageLoader.vue'
+import { mapGetters, mapState } from "vuex";
+import ImageLoader from "./loaders/ImageLoader.vue";
 
 export default {
   components: { ImageLoader },
-  name: 'ShowCard',
+  name: "ShowCard",
   props: {
     id: Number,
     show: Object,
-    genre: String
+    genre: String,
   },
-  data () {
+  data() {
     return {
       showInfo: null,
       expandDetails: false,
       position: 0,
-      loaded: false
-    }
+      loaded: false,
+    };
   },
   computed: {
-    ...mapGetters(['getShowById']),
-    ...mapState(['scrollPosition', 'screenHeight']),
-    showImage () {
+    ...mapGetters(["getShowById"]),
+    ...mapState(["scrollPosition", "screenHeight"]),
+    showImage() {
       return (
         this.showInfo?.image?.medium &&
         this.position > this.scrollPosition - 400 &&
         this.position < this.scrollPosition + this.screenHeight
-      )
-    }
+      );
+    },
   },
-  created () {
-    if (this.id) this.showInfo = this.getShowById(this.id)
-    else this.showInfo = this.show
+  created() {
+    if (this.id) this.showInfo = this.getShowById(this.id);
+    else this.showInfo = this.show;
   },
-  mounted () {
-    const card = document.getElementById(`card-${this.genre}-${this.id}`)
-    this.position = card.offsetTop
-  }
-}
+  mounted() {
+    const card = document.getElementById(`card-${this.genre}-${this.id}`);
+    this.position = card.offsetTop;
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -93,7 +94,7 @@ export default {
   cursor: pointer;
   transition: all 0.5s cubic-bezier(0.445, 0.05, 0.55, 0.95);
   &:hover {
-    transform: translateY(-4px);
+    scale: 1.1;
   }
 }
 
@@ -124,7 +125,7 @@ span {
   right: 0;
   font-size: 12px;
 }
-@media screen and (max-width: 620px) {
+@media screen and (max-width: 768px) {
   .show-card {
     margin: 4px;
     min-width: 100px;

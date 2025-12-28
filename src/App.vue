@@ -4,28 +4,20 @@
   <router-view />
 </template>
 <script>
-import { mapState } from 'vuex'
-import DashboardHeader from './components/DashboardHeader.vue'
+import { mapState } from "vuex";
+import DashboardHeader from "./components/DashboardHeader.vue";
 
 export default {
   components: { DashboardHeader },
-  created () {
-    this.getShows()
+  created() {
+    this.getShows();
   },
   methods: {
-    getShows () {
-      this.$store.dispatch('getShows')
-    }
+    getShows() {
+      this.$store.dispatch("getShows");
+    },
   },
-  computed: {
-    ...mapState(['loaded'])
-  },
-  watch: {
-    loaded (_, prev) {
-      if (!prev) this.$store.dispatch('setShows')
-    }
-  }
-}
+};
 </script>
 <style lang="scss">
 #app {

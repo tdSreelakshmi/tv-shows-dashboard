@@ -1,19 +1,26 @@
 <template>
   <nav class="flex-row">
-    <router-link to="/" :class="{ search: enableSearch }"
-      ><h1>TV Shows</h1></router-link
+    <router-link to="/" :class="['flex-row', { search: isSearch }]"
+      ><button
+        class="next-button backward"
+        v-if="!isHome && !isSearch"
+        @click="$router.back()"
+      >
+        <img src="../assets/arrow-white.svg" alt="next" />
+      </button>
+      <h1>TV Shows</h1></router-link
     >
 
     <div class="flex-row">
       <button
         class="next-button backward"
-        v-if="enableSearch"
+        v-if="enableSearch && isSearch"
         @click="toggleSearch(false)"
       >
-        <img src="../assets/arrow.svg" alt="next" />
+        <img src="../assets/arrow-white.svg" alt="next" />
       </button>
       <input
-        v-if="enableSearch"
+        v-if="enableSearch && isSearch"
         type="text"
         v-model.trim="searchTerm"
         id="search"
@@ -27,55 +34,61 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
-  name: 'DashBoardHeader',
-  data () {
+  name: "DashBoardHeader",
+  data() {
     return {
-      searchTerm: '',
-      searchTimeout: null
-    }
+      searchTerm: "",
+      searchTimeout: null,
+    };
   },
   computed: {
-    ...mapState(['enableSearch'])
+    ...mapState(["enableSearch"]),
+    isSearch() {
+      return this.$route.name == "SearchShow";
+    },
+    isHome() {
+      return this.$route.name == "home";
+    },
   },
   methods: {
-    toggleSearch (flag) {
-      this.$store.commit('SET_SEARCH', flag)
+    toggleSearch(flag) {
+      this.$store.commit("SET_SEARCH", flag);
       if (flag) {
-        this.$router.push('/search')
+        this.$router.push("/search");
         this.$nextTick(() => {
-          const searchElement = document.getElementById('search')
-          if (searchElement) searchElement.focus()
-        })
-      } else this.$router.back()
+          const searchElement = document.getElementById("search");
+          if (searchElement) searchElement.focus();
+        });
+      } else this.$router.back();
     },
-    async getShowsByName () {
+    async getShowsByName() {
       try {
-        await this.$store.dispatch('searchShow', this.searchTerm)
+        await this.$store.dispatch("searchShow", this.searchTerm);
       } catch (error) {}
-    }
+    },
   },
   watch: {
-    enableSearch (val) {
+    enableSearch(val) {
       if (val && this.searchTerm) {
         this.searchTimeout = setTimeout(() => {
-          this.getShowsByName()
-        }, 500)
+          this.getShowsByName();
+        }, 500);
       }
     },
-    searchTerm (val) {
+    searchTerm(val) {
       if (val) {
-        clearTimeout(this.searchTimeout)
+        clearTimeout(this.searchTimeout);
 
         this.searchTimeout = setTimeout(() => {
-          this.getShowsByName()
-        }, 500)
+          this.getShowsByName();
+        }, 500);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss" scoped>
@@ -102,7 +115,7 @@ h1 {
   color: transparent;
   background-clip: text;
 }
-@media screen and (max-width: 620px) {
+@media screen and (max-width: 768px) {
   a.search {
     display: none;
   }
