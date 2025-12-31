@@ -4,8 +4,8 @@
 
 <script>
 export default {
-  name: 'ImageLoader'
-}
+  name: "ImageLoader",
+};
 </script>
 
 <style lang="scss" scoped>
@@ -31,6 +31,5 @@ export default {
     background-position: 0% 50%;
   }
 }
-</style>>
-
->
+</style>
+> >

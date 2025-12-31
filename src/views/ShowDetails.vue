@@ -1,7 +1,7 @@
 <template>
-  <div v-if="showInfo && images" class="show-details">
+  <div v-if="showInfo" class="show-details">
     <div class="basic-info">
-      <div class="img-container">
+      <div v-if="images" class="img-container">
         <Transition name="fade"
           ><img
             class="show-image"
@@ -17,7 +17,7 @@
             <h1>
               {{ showInfo.name }}
             </h1>
-            <p class="rating">
+            <p class="rating" v-if="showInfo.rating.average">
               <img src="../assets/star.svg" alt="rating" />
               {{ showInfo.rating.average }}/10
             </p>
@@ -31,6 +31,7 @@
 
         <div class="genres">
           <button
+            @click="selectGenre(genre)"
             class="chips pink"
             v-for="genre in showInfo.genres"
             :key="genre"
@@ -70,19 +71,16 @@
     </div>
     <ShowSeasons :id="id" />
     <ShowCast :id="id" />
-
-    <ShowsByPerson v-if="selectedPerson" :id="selectedPerson" />
   </div>
 </template>
 
 <script>
-import ShowsByPerson from "@/components/show/ShowsByPerson.vue";
-import ShowSeasons from "@/components/ShowSeasons.vue";
+import ShowSeasons from "@/components/show/ShowSeasons.vue";
 import { mapGetters, mapState } from "vuex";
-import ShowCast from "@/components/ShowCast.vue";
+import ShowCast from "@/components/show/ShowCast.vue";
 
 export default {
-  components: { ShowsByPerson, ShowSeasons, ShowCast },
+  components: { ShowSeasons, ShowCast },
   name: "ShowDetails",
   props: {
     id: String,
@@ -93,7 +91,6 @@ export default {
       images: null,
       currentImage: 0,
       akas: null,
-      selectedPerson: null,
       imageInterval: null,
     };
   },
@@ -114,28 +111,28 @@ export default {
         ? this.showInfo.ended.split("-")[0]
         : "Present";
 
-      return `${startYear} - ${endYear}`;
+      return startYear === endYear ? startYear : `${startYear} - ${endYear}`;
     },
   },
   created() {
-    if (this.loaded) {
-      this.showInfo = this.getShowById(this.id);
-      if (!this.showInfo) {
-        this.getShow();
-      }
-    } else {
+    this.showInfo = this.getShowById(this.id);
+    if (!this.showInfo) {
       this.getShow();
     }
+
     this.getShowImages();
     this.getShowAkas();
   },
   methods: {
+    selectGenre(genre) {
+      this.$store.commit("SELECT_GENRE", genre);
+
+      this.$router.push("/");
+    },
     openOfficialSite() {
       window.open(this.showInfo.officialSite);
     },
-    selectPerson(id) {
-      this.selectedPerson = id;
-    },
+
     async getShowAkas() {
       try {
         this.akas = await this.$store.dispatch("showAkas", this.id);
@@ -170,9 +167,10 @@ export default {
     imageTimer() {
       if (!this.images) return;
       this.setAndGetImage();
-      this.imageInterval = setInterval(() => {
-        this.setAndGetImage();
-      }, 5000);
+      if (this.images.length > 1)
+        this.imageInterval = setInterval(() => {
+          this.setAndGetImage();
+        }, 5000);
     },
   },
 };

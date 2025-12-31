@@ -1,7 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap');
 
 body {
-  font-family: "Funnel Sans", sans-serif;
+  font-family: 'Funnel Sans', sans-serif;
 }
 
 $color-peach: #fec4be;
@@ -38,6 +38,9 @@ $gradient-spectrum: linear-gradient(
 body,
 #app {
   margin: 0px;
+}
+button {
+  cursor: pointer;
 }
 .flex-row {
   display: flex;
@@ -114,12 +117,12 @@ p {
   font-size: 16px;
 }
 
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 767px) {
   h2 {
     margin: 4px;
     font-size: 20px;
   }
-  h1 {
+  h1 {s
     font-size: 24px;
   }
   p {

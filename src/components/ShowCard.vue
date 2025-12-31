@@ -9,6 +9,7 @@
       loading="lazy"
       width="160"
       @load="loaded = true"
+      @error="loaded = false"
       :src="showInfo.image['medium']"
       alt=""
     />
@@ -20,15 +21,6 @@
       <p>
         {{ showInfo?.name }}
       </p>
-      <!-- <p v-if="expandDetails">
-        {{ showInfo.language }}
-      </p>
-      <p v-if="expandDetails">
-        {{ showInfo.rating.average }}
-      </p>
-      <p v-if="expandDetails">
-        {{ showInfo.network?.country.name }}
-      </p> -->
     </div>
   </div>
 </template>

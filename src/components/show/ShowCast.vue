@@ -1,13 +1,9 @@
 <template>
-  <div class="cast-wrapper">
+  <div v-if="casts.length > 0" class="cast-wrapper">
     <h2>Cast</h2>
 
-    <div v-if="casts.length > 0" class="cast-container">
-      <div
-        v-for="cast in casts"
-        :key="cast.person.id"
-        @click="selectPerson(cast.person.id)"
-      >
+    <div class="cast-container">
+      <div v-for="cast in casts" :key="cast.person.id" @click="selectPerson(cast.person.id)">
         <img
           class="cast-img"
           :src="cast?.character.image?.medium ?? cast?.person.image?.medium"
@@ -24,24 +20,24 @@
 
 <script>
 export default {
-  name: "ShowCast",
-  props: { id: Number },
+  name: 'ShowCast',
+  props: { id: String },
   data() {
     return {
-      casts: [],
-    };
+      casts: []
+    }
   },
   created() {
-    this.getShowCast();
+    this.getShowCast()
   },
   methods: {
     async getShowCast() {
       try {
-        this.casts = await this.$store.dispatch("getShowCast", this.id);
+        this.casts = await this.$store.dispatch('getShowCast', this.id)
       } catch (error) {}
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -90,7 +86,7 @@ export default {
   height: 60px;
   border-radius: 10px;
 }
-@media screen and (max-width: 728px) {
+@media screen and (max-width: 769px) {
   .cast-wrapper {
     align-items: center;
   }

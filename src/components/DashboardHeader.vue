@@ -1,26 +1,14 @@
 <template>
   <nav class="flex-row">
-    <router-link to="/" :class="['flex-row', { search: isSearch }]"
-      ><button
-        class="next-button backward"
-        v-if="!isHome && !isSearch"
-        @click="$router.back()"
-      >
-        <img src="../assets/arrow-white.svg" alt="next" />
-      </button>
-      <h1>TV Shows</h1></router-link
-    >
-
     <div class="flex-row">
-      <button
-        class="next-button backward"
-        v-if="enableSearch && isSearch"
-        @click="toggleSearch(false)"
-      >
+      <button class="next-button backward" v-if="enableBackButton" @click="back()">
         <img src="../assets/arrow-white.svg" alt="next" />
       </button>
+      <router-link to="/" :class="{ search: isSearch }"><h1>TV Shows</h1></router-link>
+    </div>
+    <div :class="['search-wrapper', { search: isSearch }]">
       <input
-        v-if="enableSearch && isSearch"
+        v-if="isSearch"
         type="text"
         v-model.trim="searchTerm"
         id="search"
@@ -34,61 +22,51 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 
 export default {
-  name: "DashBoardHeader",
+  name: 'DashBoardHeader',
   data() {
     return {
-      searchTerm: "",
-      searchTimeout: null,
-    };
+      searchTerm: ''
+    }
   },
   computed: {
-    ...mapState(["enableSearch"]),
+    ...mapState(['selectedGenre']),
     isSearch() {
-      return this.$route.name == "SearchShow";
+      return this.$route.name === 'SearchShow'
     },
     isHome() {
-      return this.$route.name == "home";
+      return this.$route.name === 'home'
     },
+    enableBackButton() {
+      return (this.isHome && this.selectedGenre) || !this.isHome
+    }
   },
   methods: {
+    back() {
+      if (this.isHome) this.$store.commit('SELECT_GENRE', null)
+      else this.$router.back()
+    },
     toggleSearch(flag) {
-      this.$store.commit("SET_SEARCH", flag);
       if (flag) {
-        this.$router.push("/search");
-        this.$nextTick(() => {
-          const searchElement = document.getElementById("search");
-          if (searchElement) searchElement.focus();
-        });
-      } else this.$router.back();
-    },
-    async getShowsByName() {
-      try {
-        await this.$store.dispatch("searchShow", this.searchTerm);
-      } catch (error) {}
-    },
+        this.$router.push('/search')
+      } else this.$router.back()
+    }
   },
   watch: {
-    enableSearch(val) {
-      if (val && this.searchTerm) {
-        this.searchTimeout = setTimeout(() => {
-          this.getShowsByName();
-        }, 500);
-      }
+    searchTerm() {
+      this.$store.commit('SET_SEARCH_TERM', this.searchTerm.trim())
     },
-    searchTerm(val) {
-      if (val) {
-        clearTimeout(this.searchTimeout);
-
-        this.searchTimeout = setTimeout(() => {
-          this.getShowsByName();
-        }, 500);
-      }
-    },
-  },
-};
+    isSearch(val) {
+      if (val)
+        this.$nextTick(() => {
+          const searchElement = document.getElementById('search')
+          if (searchElement) searchElement.focus()
+        })
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -115,8 +93,17 @@ h1 {
   color: transparent;
   background-clip: text;
 }
-@media screen and (max-width: 768px) {
-  a.search {
+.search-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+@media screen and (max-width: 767px) {
+  .search.search-wrapper {
+    flex: 1;
+  }
+  a .search {
     display: none;
   }
 }

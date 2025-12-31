@@ -2,32 +2,16 @@
   <div>
     <div class="flex-row">
       <div class="flex-row wrapper">
-        <button
-          class="next-button backward"
-          v-if="selectedGenre"
-          @click="selectGenre(null)"
-        >
-          <img src="../assets/arrow.svg" alt="next" />
-        </button>
         <h2>{{ genre }}</h2>
-        <button
-          class="next-button"
-          v-if="!selectedGenre"
-          @click="selectGenre(genre)"
-        >
+        <button class="next-button" v-if="!selectedGenre" @click="selectGenre(genre)">
           <img src="../assets/arrow.svg" alt="next" />
         </button>
       </div>
     </div>
     <!-- {{ $store.state.showsByGenre[genre] }} -->
 
-    <div :class="['shows-wrapper', [wrap ? 'wrap' : 'no-wrap']]">
-      <ShowCard
-        v-for="showId in shows"
-        :key="showId"
-        :id="showId"
-        :genre="genre"
-      />
+    <div :class="['shows-wrapper', wrap ? 'wrap' : 'no-wrap', { center: selectedGenre }]">
+      <ShowCard v-for="showId in shows" :key="showId" :id="showId" :genre="genre" />
     </div>
   </div>
 </template>
@@ -43,7 +27,7 @@ export default {
     genre: String,
     wrap: Boolean
   },
-  data () {
+  data() {
     return {
       showAll: false
     }
@@ -51,19 +35,19 @@ export default {
   computed: {
     ...mapState(['showsByGenre', 'selectedGenre']),
 
-    shows () {
+    shows() {
       return this.selectedGenre && this.showAll
         ? this.showsByGenre[this.genre]
         : [...this.showsByGenre[this.genre].slice(0, 10)]
     }
   },
-  mounted () {
+  mounted() {
     setTimeout(() => {
       this.showAll = true
-    }, 200)
+    }, 10)
   },
   methods: {
-    selectGenre (genre) {
+    selectGenre(genre) {
       this.$store.commit('SELECT_GENRE', genre)
     }
   }
@@ -73,5 +57,8 @@ export default {
 <style lang="scss" scoped>
 .wrapper {
   margin-left: 20px;
+}
+.center {
+  justify-content: center;
 }
 </style>

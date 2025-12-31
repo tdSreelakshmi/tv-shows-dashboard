@@ -1,12 +1,12 @@
-import { shallowMount } from '@vue/test-utils'
-import HelloWorld from '@/components/HelloWorld.vue'
+import { shallowMount } from "@vue/test-utils";
+import DashboardHeader from "@/components/DashboardHeader.vue";
 
-describe('HelloWorld.vue', () => {
-  it('renders props.msg when passed', () => {
-    const msg = 'new message'
-    const wrapper = shallowMount(HelloWorld, {
-      props: { msg }
-    })
-    expect(wrapper.text()).toMatch(msg)
-  })
-})
+describe("DashboardHeader.vue", () => {
+  it("renders dashboard title in h1", () => {
+    const wrapper = shallowMount(DashboardHeader);
+
+    const title = wrapper.find("h1");
+    expect(title.exists()).toBe(true);
+    expect(title.text()).toBe("TV Shows");
+  });
+});

@@ -2,37 +2,53 @@
   <div class="home" id="home" @scroll="onScroll">
     <ShowsByGenre v-if="selectedGenre" :genre="selectedGenre" :wrap="true" />
 
-    <div v-else>
+    <div v-else-if="getGenres.length">
       <div v-for="genre in getGenres" :key="genre">
         <ShowsByGenre :genre="genre" />
       </div>
     </div>
+    <PageLoader v-else-if="!loaded" />
+    <h2 v-else>Some Error Occured. Please try again later</h2>
   </div>
 </template>
 
 <script>
-import DashboardHeader from '@/components/DashboardHeader.vue'
 import { mapGetters, mapState } from 'vuex'
 
 import ShowsByGenre from '@/components/ShowsByGenre.vue'
+import PageLoader from '@/components/loaders/PageLoader.vue'
 export default {
   name: 'HomeView',
-  components: { DashboardHeader, ShowsByGenre },
+  components: { ShowsByGenre, PageLoader },
   computed: {
     ...mapGetters(['getGenres']),
-    ...mapState(['selectedGenre'])
+    ...mapState(['selectedGenre', 'loaded'])
   },
-  mounted () {
-    console.log('mounted')
+  created() {
+    this.getShows()
+  },
+  mounted() {
+    this.$store.commit('SELECT_GENRE', null)
     const appElement = document.getElementById('app')
-    appElement.addEventListener('scroll', this.onScroll, { passive: true })
+    appElement.addEventListener('scroll', this.onScroll)
   },
-  beforeUnmount () {
+  beforeUnmount() {
     window.removeEventListener('scroll', this.onScroll)
   },
   methods: {
-    onScroll (event) {
+    getShows() {
+      try {
+        this.$store.dispatch('getShows')
+      } catch (error) {}
+    },
+    onScroll(event) {
       this.$store.commit('SET_SCROLL_POSTION', event.target.scrollTop)
+    }
+  },
+  watch: {
+    selectedGenre() {
+      const appElement = document.getElementById('app')
+      appElement.scrollTo(0, 0)
     }
   }
 }
@@ -40,7 +56,7 @@ export default {
 <style lang="scss" scoped>
 .home {
   height: 100%;
-  min-height: 100dvh;
+  min-height: calc(100dvh - 80px);
   display: flex;
   flex-direction: column;
   padding: 0px 0px;

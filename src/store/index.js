@@ -1,4 +1,5 @@
 import { createStore } from "vuex";
+import { addShows, getAllShows, getAllGenres, addGenres } from "../indexeddb";
 import axios from "axios";
 const tvMazeHTTP = axios.create({
   baseURL: "https://api.tvmaze.com/",
@@ -11,10 +12,9 @@ export default createStore({
     page: 1,
     hasMore: true,
     selectedGenre: null,
-    enableSearch: false,
-    searchResults: null,
     screenHeight: screen.availHeight,
     scrollPosition: 0,
+    searchTerm: null,
   },
   getters: {
     getGenres: (state) => Object.keys(state.showsByGenre),
@@ -22,16 +22,16 @@ export default createStore({
     getShowsByGenre: (state) => (genre) => state.showsByGenre[genre],
   },
   mutations: {
+    SET_SEARCH_TERM(state, payload) {
+      state.searchTerm = payload;
+    },
+    SET_LOADED(state, payload) {
+      state.loaded = payload;
+    },
     SET_SCROLL_POSTION(state, payload) {
       state.scrollPosition = payload;
     },
-    SET_SEARCH(state, payload) {
-      state.enableSearch = payload;
-      if (!payload) state.searchResults = null;
-    },
-    SET_SEARCH_RESULTS(state, payload) {
-      state.searchResults = payload;
-    },
+
     SELECT_GENRE(state, payload) {
       state.selectedGenre = payload;
     },
@@ -46,55 +46,67 @@ export default createStore({
       }
     },
     SET_SHOW_INCREMENTALLY(state, show) {
-      state.showsById[show.id] = show;
+      if (!state.showsById[show.id]) {
+        state.showsById[show.id] = show;
 
-      show.genres.forEach((genre) => {
-        if (!state.showsByGenre[genre]) {
-          state.showsByGenre[genre] = [];
-          state.showsByGenre[genre].push(show.id);
-        } else {
-          const list = state.showsByGenre[genre];
-          const rating = show.rating?.average ?? 0;
-          if (rating === 0) list.push(show.id);
-          else {
-            let left = 0;
-            let right = list.length - 1;
-            while (left <= right) {
-              let mid = Math.floor((left + right) / 2);
-              let midRating = state.showsById[list[mid]].rating?.average ?? 0;
-              if (midRating < rating) {
-                right = mid - 1;
-              } else {
-                left = mid + 1;
+        show.genres.forEach((genre) => {
+          if (!state.showsByGenre[genre]) {
+            state.showsByGenre[genre] = [];
+            state.showsByGenre[genre].push(show.id);
+          } else {
+            const list = state.showsByGenre[genre];
+            const rating = show.rating?.average ?? 0;
+            if (rating === 0) list.push(show.id);
+            else {
+              let left = 0;
+              let right = list.length - 1;
+              while (left <= right) {
+                const mid = Math.floor((left + right) / 2);
+                const midRating =
+                  state.showsById[list[mid]].rating?.average ?? 0;
+                if (midRating < rating) {
+                  right = mid - 1;
+                } else {
+                  left = mid + 1;
+                }
               }
+              list.splice(left, 0, show.id);
             }
-            list.splice(left, 0, show.id);
           }
-        }
+        });
+      }
+    },
+    SET_SHOWS(state, payload) {
+      payload.forEach((showInfo) => {
+        state.showsById[showInfo.id] = showInfo.shows;
+      });
+    },
+    SET_GENRES(state, payload) {
+      payload.forEach((genre) => {
+        state.showsByGenre[genre.name] = genre.ids;
       });
     },
   },
   actions: {
-    async getCastCredits({}, id) {
+    async getCastCredits(_, id) {
       try {
         const response = await tvMazeHTTP.get(`people/${id}?embed=castcredits`);
         return response.data;
-      } catch (error) {}
+      } catch (error) {
+        console.log(error);
+      }
     },
-    async showAkas({}, id) {
+    async showAkas(_, id) {
       try {
         const response = await tvMazeHTTP.get(`shows/${id}/akas`);
         const showNames = response.data.map((show) => show.name);
         return showNames;
       } catch (error) {}
     },
-    async searchShow({ commit }, term) {
-      try {
-        const response = await tvMazeHTTP.get(`search/shows?q=${term}`);
-        commit("SET_SEARCH_RESULTS", response.data);
-      } catch (error) {
-        commit("SET_SEARCH_RESULTS", null);
-      }
+    async searchShow(_, term) {
+      const response = await tvMazeHTTP.get(`search/shows?q=${term}`);
+
+      return response.data;
     },
     async getShow({ commit }, id) {
       try {
@@ -109,22 +121,43 @@ export default createStore({
       }
     },
 
-    async getShows({ state, dispatch }) {
-      let page = 0;
+    async getShows({ state, commit, dispatch }) {
+      let shows = [];
+      let genres = null;
+
+      try {
+        const lastShowsFetched =
+          parseInt(localStorage.getItem("lastShowsFetched")) || 0;
+        const fetchNewShows =
+          Date.now() - lastShowsFetched > 24 * 60 * 60 * 1000;
+        if (lastShowsFetched && !fetchNewShows) {
+          shows = await getAllShows("shows");
+          genres = await getAllGenres("genres");
+
+          if (shows.length > 0 && genres && Object.keys(genres).length > 0) {
+            commit("SET_SHOWS", shows);
+            commit("SET_GENRES", genres);
+            return;
+          }
+        }
+      } catch (err) {
+        console.log("Failed to read IndexedDB:", err);
+      }
+      console.log(shows.length, shows[shows.length - 1]);
+      let page = Math.floor((shows[shows.length - 1]?.id || 0) / 250);
+      console.log(page);
       state.hasMore = true;
+      let allPagesFetched = true;
       while (state.hasMore) {
         try {
           const fetched = await dispatch("fetchData", page);
-          // state.hasMore = false;
 
-          if (!fetched) {
-            state.hasMore = false;
-          } else {
-            page++;
-          }
+          if (!fetched) state.hasMore = false;
+          else page++;
         } catch (err) {
           console.error("Fetch failed:", err);
           state.hasMore = false;
+          allPagesFetched = false;
         }
         await new Promise((resolve) => {
           setTimeout(() => {
@@ -132,9 +165,15 @@ export default createStore({
           }, 50);
         });
       }
+
+      if (allPagesFetched) {
+        localStorage.setItem("lastShowsFetched", Date.now());
+        await addShows(state.showsById);
+        await addGenres(state.showsByGenre);
+      }
     },
 
-    async fetchData({ state, commit }, page) {
+    async fetchData({ commit }, page) {
       try {
         const response = await tvMazeHTTP.get(`shows?page=${page}`);
         const shows = response.data;
@@ -149,15 +188,18 @@ export default createStore({
               await new Promise((resolve) => setTimeout(resolve, 0));
             }
           }
-          state.loaded = true;
+          commit("SET_LOADED", true);
 
           return true;
         } else {
           return false;
         }
       } catch (error) {
+        if (error.response && error.response.status === 404) {
+          return false;
+        }
         console.error("Error fetching page", page, error);
-        // throw error;
+        throw error;
       }
     },
     async getShowImages(_, id) {
