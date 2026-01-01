@@ -1,5 +1,5 @@
 <template>
-  <nav class="flex-row">
+  <nav class="header">
     <div class="flex-row">
       <button class="next-button backward" v-if="enableBackButton" @click="back()">
         <img src="../assets/arrow-white.svg" alt="next" />
@@ -78,13 +78,19 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
 nav {
   position: fixed;
   min-height: 60px;
   height: fit-content;
   background: transparent;
   z-index: 10;
-  padding: 4px 5%;
+  padding: 4px 2%;
   justify-content: space-between;
   top: 16px;
   background: black;
@@ -106,6 +112,7 @@ h1 {
   flex-direction: row;
   align-items: center;
   gap: 8px;
+  justify-content: space-between;
 }
 @media screen and (max-width: 767px) {
   .search.search-wrapper {

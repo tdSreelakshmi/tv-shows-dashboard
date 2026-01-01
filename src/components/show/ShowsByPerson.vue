@@ -130,7 +130,7 @@ h3 {
 .person-info-wrapper {
   position: fixed;
   background: white;
-  max-height: 90vh;
+  max-height: 90dvh;
   height: fit-content;
   width: 90vw;
   max-width: 400px;
@@ -198,5 +198,15 @@ img {
   flex-direction: column;
   align-items: center;
   overflow: auto;
+}
+
+@media screen and (max-width: 620px) {
+  .person-info {
+    gap: 8px;
+
+    & img {
+      width: 160px;
+    }
+  }
 }
 </style>

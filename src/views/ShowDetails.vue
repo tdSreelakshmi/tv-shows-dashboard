@@ -173,7 +173,11 @@ export default {
   watch: {
     id() {
       this.loading = true;
-
+      clearInterval(this.imageInterval);
+      this.showInfo = null;
+      this.images = null;
+      this.currentImage = 0;
+      this.akas = null;
       this.showInfo = null;
       this.getShowInfoById();
     },

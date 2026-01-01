@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,300..800;1,300..800&display=swap");
 
 body {
-  font-family: 'Funnel Sans', sans-serif;
+  font-family: "Funnel Sans", sans-serif;
 }
 
 $color-peach: #fec4be;
@@ -84,6 +84,7 @@ input {
   font-size: 16px;
   border-radius: 20px;
   background: white;
+  width: 100%;
 }
 .wrap {
   flex-wrap: wrap;
