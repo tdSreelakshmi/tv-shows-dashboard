@@ -1,8 +1,8 @@
 <template>
-  <div
+  <router-link
     :id="`card-${genre}-${id}`"
     class="show-card"
-    @click="$router.push(`/show/${id ?? this.showInfo.id}`)"
+    :to="'/show/' + (id ?? this.showInfo.id)"
   >
     <img
       v-if="showImage"
@@ -11,18 +11,19 @@
       @load="loaded = true"
       @error="loaded = false"
       :src="showInfo.image['medium']"
-      alt=""
+      :alt="showInfo?.name + '-img'"
     />
     <ImageLoader v-else />
     <span v-if="showInfo.rating.average">
       {{ showInfo.rating.average }}
+      <img src="../assets/star.svg" alt="rating" />
     </span>
     <div class="text">
       <p>
         {{ showInfo?.name }}
       </p>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script>
@@ -35,14 +36,14 @@ export default {
   props: {
     id: Number,
     show: Object,
-    genre: String,
+    genre: String
   },
   data() {
     return {
       showInfo: null,
       expandDetails: false,
       position: 0,
-      loaded: false,
+      loaded: false
     };
   },
   computed: {
@@ -54,7 +55,7 @@ export default {
         this.position > this.scrollPosition - 400 &&
         this.position < this.scrollPosition + this.screenHeight
       );
-    },
+    }
   },
   created() {
     if (this.id) this.showInfo = this.getShowById(this.id);
@@ -63,7 +64,7 @@ export default {
   mounted() {
     const card = document.getElementById(`card-${this.genre}-${this.id}`);
     this.position = card.offsetTop;
-  },
+  }
 };
 </script>
 
@@ -116,6 +117,14 @@ span {
   border-radius: 0px 6px 0px 6px;
   right: 0;
   font-size: 12px;
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  align-items: center;
+  & img {
+    height: 10px;
+    width: 10px;
+  }
 }
 @media screen and (max-width: 768px) {
   .show-card {

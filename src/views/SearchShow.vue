@@ -9,54 +9,55 @@
 </template>
 
 <script>
-import ShowCard from '@/components/ShowCard.vue'
-import { mapState } from 'vuex'
-import PageLoader from '@/components/loaders/PageLoader.vue'
+import ShowCard from "@/components/ShowCard.vue";
+import { mapState } from "vuex";
+import PageLoader from "@/components/loaders/PageLoader.vue";
 
 export default {
   components: { ShowCard, PageLoader },
-  name: 'SearchShow',
+  name: "SearchShow",
   computed: {
-    ...mapState(['searchTerm'])
+    ...mapState(["searchTerm"])
   },
   data() {
     return {
       searchTimeout: null,
       searchResults: null,
-      message: 'Search for shows',
+      message: "Search for shows",
       loading: false
-    }
+    };
   },
 
   mounted() {
-    if (this.searchTerm) this.getShowsByName()
+    if (this.searchTerm) this.getShowsByName();
   },
   methods: {
     async getShowsByName() {
       try {
-        this.loading = true
-        this.searchResults = await this.$store.dispatch('searchShow', this.searchTerm)
-        if (this.searchResults.length === 0) this.message = 'No results found'
+        this.loading = true;
+        this.searchResults = await this.$store.dispatch("searchShow", this.searchTerm);
+        if (this.searchResults.length === 0) this.message = "No results found";
       } catch (error) {
-        this.searchResults = null
-        this.message = 'Some error occured. Please try again later'
+        this.searchResults = null;
+        this.message = "Some error occured. Please try again later";
       } finally {
-        this.loading = false
+        this.loading = false;
       }
     }
   },
   watch: {
     searchTerm(val) {
+      clearTimeout(this.searchTimeout);
       if (val) {
-        clearTimeout(this.searchTimeout)
-
         this.searchTimeout = setTimeout(() => {
-          this.getShowsByName()
-        }, 500)
+          this.getShowsByName();
+        }, 500);
+      } else {
+        this.searchResults = null;
       }
     }
   }
-}
+};
 </script>
 
 <style scoped>

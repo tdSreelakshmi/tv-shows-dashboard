@@ -1,0 +1,29 @@
+[debug] [2026-01-01T20:10:11.759Z] ----------------------------------------------------------------------
+[debug] [2026-01-01T20:10:11.765Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\tdsre\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2026-01-01T20:10:11.765Z] CLI Version:   15.1.0
+[debug] [2026-01-01T20:10:11.766Z] Platform:      win32
+[debug] [2026-01-01T20:10:11.766Z] Node Version:  v22.18.0
+[debug] [2026-01-01T20:10:11.766Z] Time:          Fri Jan 02 2026 01:40:11 GMT+0530 (India Standard Time)
+[debug] [2026-01-01T20:10:11.767Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-01-01T20:10:11.770Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2026-01-01T20:10:15.650Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-01-01T20:10:15.651Z] > authorizing via signed-in user (tdsreelakshmi01@gmail.com)
+[debug] [2026-01-01T20:10:15.651Z] [iam] checking project social-app-c0037 for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2026-01-01T20:10:15.652Z] Checked if tokens are valid: false, expires at: 1767217611343
+[debug] [2026-01-01T20:10:15.652Z] Checked if tokens are valid: false, expires at: 1767217611343
+[debug] [2026-01-01T20:10:15.652Z] > refreshing access token with scopes: []
+[debug] [2026-01-01T20:10:15.654Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-01-01T20:10:15.654Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-01T20:10:16.002Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-01-01T20:10:16.002Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-01-01T20:10:16.014Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/social-app-c0037:testIamPermissions [none]
+[debug] [2026-01-01T20:10:16.014Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/social-app-c0037:testIamPermissions x-goog-quota-user=projects/social-app-c0037
+[debug] [2026-01-01T20:10:16.015Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/social-app-c0037:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-01-01T20:10:16.252Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2026-01-01T20:10:16.252Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[debug] [2026-01-01T20:10:17.571Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/social-app-c0037:testIamPermissions 200
+[debug] [2026-01-01T20:10:17.571Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/social-app-c0037:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2026-01-01T20:10:17.572Z] Checked if tokens are valid: true, expires at: 1767301815002
+[debug] [2026-01-01T20:10:17.572Z] Checked if tokens are valid: true, expires at: 1767301815002
+[debug] [2026-01-01T20:10:17.573Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/social-app-c0037 [none]

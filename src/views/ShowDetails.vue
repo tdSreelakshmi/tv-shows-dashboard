@@ -1,5 +1,7 @@
 <template>
-  <div v-if="showInfo" class="show-details">
+  <PageLoader v-if="loading" />
+
+  <div v-else-if="showInfo" class="show-details">
     <div class="basic-info">
       <div v-if="images" class="img-container">
         <Transition name="fade"
@@ -7,7 +9,7 @@
             class="show-image"
             v-if="currentImage"
             :src="images[currentImage - 1]"
-            alt=""
+            alt="show-img"
         /></Transition>
       </div>
 
@@ -54,36 +56,33 @@
             {{ showInfo.language }}
           </p>
           <p class="chips blue">{{ getShowYearRange }}</p>
-
-          <p class="chips blue">{{ showInfo.averageRuntime }} mins</p>
         </div>
 
         <p v-html="showInfo.summary"></p>
 
-        <button
-          class="watch"
-          v-if="showInfo.officialSite"
-          @click="openOfficialSite()"
-        >
+        <button class="watch" v-if="showInfo.officialSite" @click="openOfficialSite()">
           Watch Now
         </button>
       </div>
     </div>
-    <ShowSeasons :id="id" />
-    <ShowCast :id="id" />
+    <ShowSeasons v-if="!loading" :id="id" />
+    <ShowCast v-if="!loading" :id="id" />
   </div>
+  <h2 v-else>Some Error Occured. Please try again later</h2>
 </template>
 
 <script>
 import ShowSeasons from "@/components/show/ShowSeasons.vue";
 import { mapGetters, mapState } from "vuex";
 import ShowCast from "@/components/show/ShowCast.vue";
+import PageLoader from "@/components/loaders/PageLoader.vue";
 
 export default {
-  components: { ShowSeasons, ShowCast },
+  components: { ShowSeasons, ShowCast, PageLoader },
   name: "ShowDetails",
   props: {
     id: String,
+    showId: String
   },
   data() {
     return {
@@ -92,6 +91,7 @@ export default {
       currentImage: 0,
       akas: null,
       imageInterval: null,
+      loading: true
     };
   },
   unmounted() {
@@ -101,29 +101,24 @@ export default {
     ...mapGetters(["getShowById"]),
     ...mapState(["loaded"]),
     getShowYearRange() {
-      const startYear = this.showInfo.premiered
-        ? this.showInfo.premiered.split("-")[0]
-        : null;
+      const startYear = this.showInfo.premiered ? this.showInfo.premiered.split("-")[0] : null;
 
       if (!startYear) return null;
 
-      const endYear = this.showInfo.ended
-        ? this.showInfo.ended.split("-")[0]
-        : "Present";
+      const endYear = this.showInfo.ended ? this.showInfo.ended.split("-")[0] : "Present";
 
       return startYear === endYear ? startYear : `${startYear} - ${endYear}`;
-    },
+    }
   },
   created() {
-    this.showInfo = this.getShowById(this.id);
-    if (!this.showInfo) {
-      this.getShow();
-    }
-
-    this.getShowImages();
-    this.getShowAkas();
+    this.getShowInfoById();
   },
   methods: {
+    getShowInfoById() {
+      this.getShow();
+      this.getShowImages();
+      this.getShowAkas();
+    },
     selectGenre(genre) {
       this.$store.commit("SELECT_GENRE", genre);
 
@@ -140,11 +135,14 @@ export default {
     },
     async getShow() {
       try {
-        this.showInfo = this.casts = await this.$store.dispatch(
-          "getShow",
-          this.id
-        );
-      } catch (error) {}
+        this.loading = true;
+
+        this.showInfo = await this.$store.dispatch("getShow", this.id);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        this.loading = false;
+      }
     },
 
     async getShowImages() {
@@ -154,8 +152,7 @@ export default {
       } catch (error) {}
     },
     setAndGetImage() {
-      const next =
-        this.currentImage < this.images.length ? this.currentImage + 1 : 1;
+      const next = this.currentImage < this.images.length ? this.currentImage + 1 : 1;
       this.currentImage = null;
       const img = new Image();
       img.src = this.images[next - 1];
@@ -171,12 +168,29 @@ export default {
         this.imageInterval = setInterval(() => {
           this.setAndGetImage();
         }, 5000);
-    },
+    }
   },
+  watch: {
+    id() {
+      this.loading = true;
+
+      this.showInfo = null;
+      this.getShowInfoById();
+    },
+    showInfo(val) {
+      if (val) {
+        this.loading = false;
+      }
+    }
+  }
 };
 </script>
 
 <style lang="scss" scoped>
+h2 {
+  place-self: center;
+  padding-top: 40vh;
+}
 .basic-info {
   display: flex;
   flex-direction: row;

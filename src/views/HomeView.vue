@@ -13,45 +13,58 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters, mapState } from "vuex";
 
-import ShowsByGenre from '@/components/ShowsByGenre.vue'
-import PageLoader from '@/components/loaders/PageLoader.vue'
+import ShowsByGenre from "@/components/ShowsByGenre.vue";
+import PageLoader from "@/components/loaders/PageLoader.vue";
 export default {
-  name: 'HomeView',
+  name: "HomeView",
   components: { ShowsByGenre, PageLoader },
   computed: {
-    ...mapGetters(['getGenres']),
-    ...mapState(['selectedGenre', 'loaded'])
+    ...mapGetters(["getGenres"]),
+    ...mapState(["selectedGenre", "loaded"])
   },
   created() {
-    this.getShows()
+    this.getShows();
+  },
+  data() {
+    return {
+      appElement: null,
+      scrollThrottled: false
+    };
   },
   mounted() {
-    this.$store.commit('SELECT_GENRE', null)
-    const appElement = document.getElementById('app')
-    appElement.addEventListener('scroll', this.onScroll)
+    this.appElement = document.getElementById("app");
+    if (this.appElement) this.appElement.addEventListener("scroll", this.onScroll);
   },
   beforeUnmount() {
-    window.removeEventListener('scroll', this.onScroll)
+    if (this.appElement) this.appElement.removeEventListener("scroll", this.onScroll);
   },
   methods: {
     getShows() {
       try {
-        this.$store.dispatch('getShows')
-      } catch (error) {}
+        this.$store.dispatch("getShows");
+      } catch (error) {
+        console.log(error);
+      }
     },
     onScroll(event) {
-      this.$store.commit('SET_SCROLL_POSTION', event.target.scrollTop)
+      if (this.scrollThrottled) return;
+
+      this.scrollThrottled = true;
+      this.$store.commit("SET_SCROLL_POSTION", event.target.scrollTop);
+      setTimeout(() => {
+        this.scrollThrottled = false;
+      }, 20);
     }
   },
   watch: {
     selectedGenre() {
-      const appElement = document.getElementById('app')
-      appElement.scrollTo(0, 0)
+      const appElement = document.getElementById("app");
+      appElement.scrollTo(0, 0);
     }
   }
-}
+};
 </script>
 <style lang="scss" scoped>
 .home {

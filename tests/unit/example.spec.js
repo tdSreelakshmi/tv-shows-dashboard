@@ -7,6 +7,6 @@ describe("DashboardHeader.vue", () => {
 
     const title = wrapper.find("h1");
     expect(title.exists()).toBe(true);
-    expect(title.text()).toBe("TV Shows");
+    expect(title.text()).toBe("Show Glance");
   });
 });

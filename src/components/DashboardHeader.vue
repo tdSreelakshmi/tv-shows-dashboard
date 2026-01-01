@@ -4,7 +4,7 @@
       <button class="next-button backward" v-if="enableBackButton" @click="back()">
         <img src="../assets/arrow-white.svg" alt="next" />
       </button>
-      <router-link to="/" :class="{ search: isSearch }"><h1>TV Shows</h1></router-link>
+      <router-link to="/" :class="{ search: isSearch }"><h1>Show Glance</h1></router-link>
     </div>
     <div :class="['search-wrapper', { search: isSearch }]">
       <input
@@ -14,59 +14,67 @@
         id="search"
         placeholder="Search Show"
       />
+      <button
+        v-if="isSearch"
+        class="next-button"
+        @click="searchTerm = ''"
+        aria-label="clear search"
+      >
+        <img src="@/assets/close.svg" alt="close" />
+      </button>
       <button v-else class="next-button" @click="toggleSearch(true)">
-        <img src="../assets/Search.svg" alt="" />
+        <img src="../assets/Search.svg" alt="search" />
       </button>
     </div>
   </nav>
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
 export default {
-  name: 'DashBoardHeader',
+  name: "DashBoardHeader",
   data() {
     return {
-      searchTerm: ''
-    }
+      searchTerm: ""
+    };
   },
   computed: {
-    ...mapState(['selectedGenre']),
+    ...mapState(["selectedGenre"]),
     isSearch() {
-      return this.$route.name === 'SearchShow'
+      return this.$route.name === "SearchShow";
     },
     isHome() {
-      return this.$route.name === 'home'
+      return this.$route.name === "home";
     },
     enableBackButton() {
-      return (this.isHome && this.selectedGenre) || !this.isHome
+      return (this.isHome && this.selectedGenre) || !this.isHome;
     }
   },
   methods: {
     back() {
-      if (this.isHome) this.$store.commit('SELECT_GENRE', null)
-      else this.$router.back()
+      if (this.isHome) this.$store.commit("SELECT_GENRE", null);
+      else this.$router.back();
     },
     toggleSearch(flag) {
       if (flag) {
-        this.$router.push('/search')
-      } else this.$router.back()
+        this.$router.push("/search");
+      } else this.$router.back();
     }
   },
   watch: {
     searchTerm() {
-      this.$store.commit('SET_SEARCH_TERM', this.searchTerm.trim())
+      this.$store.commit("SET_SEARCH_TERM", this.searchTerm.trim());
     },
     isSearch(val) {
       if (val)
         this.$nextTick(() => {
-          const searchElement = document.getElementById('search')
-          if (searchElement) searchElement.focus()
-        })
+          const searchElement = document.getElementById("search");
+          if (searchElement) searchElement.focus();
+        });
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -103,7 +111,7 @@ h1 {
   .search.search-wrapper {
     flex: 1;
   }
-  a .search {
+  a.search {
     display: none;
   }
 }

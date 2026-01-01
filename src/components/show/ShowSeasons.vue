@@ -9,14 +9,18 @@
     <div class="season-wrapper" v-if="selectedSeason && episodes">
       <h3>
         Season {{ seasons[selectedSeason].number }} -
-        {{ seasons[selectedSeason].premiereDate.split('-')[0] }}
+        {{ seasons[selectedSeason].premiereDate.split("-")[0] }}
       </h3>
 
       <p v-html="seasons[selectedSeason].summary"></p>
 
       <div class="episode-wrapper" v-if="episodes">
         <div class="episode-item" v-for="episode in episodes" :key="episode.id">
-          <img v-if="episode.image?.medium" :src="episode.image.medium" alt="" />
+          <img
+            v-if="episode.image?.medium"
+            :src="episode.image.medium"
+            :alt="episode.name + '-img'"
+          />
 
           <div>
             <h4>{{ episode.name }}</h4>
@@ -32,7 +36,7 @@
 
 <script>
 export default {
-  name: 'ShowSeasons',
+  name: "ShowSeasons",
   props: { id: String },
   data() {
     return {
@@ -40,38 +44,38 @@ export default {
       episodes: null,
       selectedSeason: null,
       loaded: false
-    }
+    };
   },
   created() {
-    this.getShowSeasons()
+    this.getShowSeasons();
   },
   methods: {
     selectSeason(id) {
-      this.selectedSeason = this.selectedSeason === id ? null : id
-      if (!this.selectedSeason) this.episodes = null
+      this.selectedSeason = this.selectedSeason === id ? null : id;
+      if (!this.selectedSeason) this.episodes = null;
     },
     async getEpisodes() {
       try {
-        this.episodes = await this.$store.dispatch('getShowEpisodesBySeason', this.selectedSeason)
+        this.episodes = await this.$store.dispatch("getShowEpisodesBySeason", this.selectedSeason);
       } catch (error) {
-        this.episodes = null
+        this.episodes = null;
       } finally {
-        this.loaded = true
+        this.loaded = true;
       }
     },
     async getShowSeasons() {
       try {
-        this.seasons = await this.$store.dispatch('getShowSeasons', this.id)
+        this.seasons = await this.$store.dispatch("getShowSeasons", this.id);
       } catch (error) {}
     }
   },
   watch: {
     selectedSeason(val) {
-      if (val) this.getEpisodes()
-      else this.episodes = null
+      if (val) this.getEpisodes();
+      else this.episodes = null;
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>

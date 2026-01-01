@@ -4,14 +4,14 @@ module.exports = defineConfig({
   lintOnSave: "warning",
   devServer: {
     client: {
-      overlay: false,
-    },
+      overlay: false
+    }
   },
   css: {
     loaderOptions: {
       scss: {
-        additionalData: '@import "@/styles/variables.scss";',
-      },
-    },
-  },
+        additionalData: '@import "@/styles/variables.scss";'
+      }
+    }
+  }
 });

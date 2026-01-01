@@ -2,7 +2,7 @@ import { createStore } from "vuex";
 import { addShows, getAllShows, getAllGenres, addGenres } from "../indexeddb";
 import axios from "axios";
 const tvMazeHTTP = axios.create({
-  baseURL: "https://api.tvmaze.com/",
+  baseURL: "https://api.tvmaze.com/"
 });
 export default createStore({
   state: {
@@ -14,12 +14,12 @@ export default createStore({
     selectedGenre: null,
     screenHeight: screen.availHeight,
     scrollPosition: 0,
-    searchTerm: null,
+    searchTerm: null
   },
   getters: {
     getGenres: (state) => Object.keys(state.showsByGenre),
     getShowById: (state) => (id) => state.showsById[id],
-    getShowsByGenre: (state) => (genre) => state.showsByGenre[genre],
+    getShowsByGenre: (state) => (genre) => state.showsByGenre[genre]
   },
   mutations: {
     SET_SEARCH_TERM(state, payload) {
@@ -62,8 +62,7 @@ export default createStore({
               let right = list.length - 1;
               while (left <= right) {
                 const mid = Math.floor((left + right) / 2);
-                const midRating =
-                  state.showsById[list[mid]].rating?.average ?? 0;
+                const midRating = state.showsById[list[mid]].rating?.average ?? 0;
                 if (midRating < rating) {
                   right = mid - 1;
                 } else {
@@ -85,7 +84,7 @@ export default createStore({
       payload.forEach((genre) => {
         state.showsByGenre[genre.name] = genre.ids;
       });
-    },
+    }
   },
   actions: {
     async getCastCredits(_, id) {
@@ -108,7 +107,8 @@ export default createStore({
 
       return response.data;
     },
-    async getShow({ commit }, id) {
+    async getShow({ state, commit }, id) {
+      if (state.showsById[id]) return state.showsById[id];
       try {
         const response = await tvMazeHTTP.get(`shows/${id}`);
 
@@ -126,10 +126,8 @@ export default createStore({
       let genres = null;
 
       try {
-        const lastShowsFetched =
-          parseInt(localStorage.getItem("lastShowsFetched")) || 0;
-        const fetchNewShows =
-          Date.now() - lastShowsFetched > 24 * 60 * 60 * 1000;
+        const lastShowsFetched = parseInt(localStorage.getItem("lastShowsFetched")) || 0;
+        const fetchNewShows = Date.now() - lastShowsFetched > 24 * 60 * 60 * 1000;
         if (lastShowsFetched && !fetchNewShows) {
           shows = await getAllShows("shows");
           genres = await getAllGenres("genres");
@@ -143,9 +141,7 @@ export default createStore({
       } catch (err) {
         console.log("Failed to read IndexedDB:", err);
       }
-      console.log(shows.length, shows[shows.length - 1]);
       let page = Math.floor((shows[shows.length - 1]?.id || 0) / 250);
-      console.log(page);
       state.hasMore = true;
       let allPagesFetched = true;
       while (state.hasMore) {
@@ -262,7 +258,7 @@ export default createStore({
         console.log(error);
         throw error;
       }
-    },
+    }
   },
-  modules: {},
+  modules: {}
 });

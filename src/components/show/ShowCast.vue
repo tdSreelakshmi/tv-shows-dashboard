@@ -3,7 +3,7 @@
     <h2>Cast</h2>
 
     <div class="cast-container">
-      <div v-for="cast in casts" :key="cast.person.id" @click="selectPerson(cast.person.id)">
+      <button v-for="cast in casts" :key="cast.person.id" @click="selectPerson(cast.person.id)">
         <img
           class="cast-img"
           :src="cast?.character.image?.medium ?? cast?.person.image?.medium"
@@ -13,31 +13,44 @@
         <p class="cast-text">
           {{ cast?.person.name }} <span>as {{ cast?.character.name }}</span>
         </p>
-      </div>
+      </button>
     </div>
+    <ShowsByPerson
+      v-if="selectedPerson"
+      :id="selectedPerson"
+      :show-id="id"
+      @close="selectedPerson = null"
+    />
   </div>
 </template>
 
 <script>
+import ShowsByPerson from "./ShowsByPerson.vue";
+
 export default {
-  name: 'ShowCast',
+  name: "ShowCast",
   props: { id: String },
+  components: { ShowsByPerson },
   data() {
     return {
-      casts: []
-    }
+      casts: [],
+      selectedPerson: null
+    };
   },
   created() {
-    this.getShowCast()
+    this.getShowCast();
   },
   methods: {
+    selectPerson(id) {
+      this.selectedPerson = id;
+    },
     async getShowCast() {
       try {
-        this.casts = await this.$store.dispatch('getShowCast', this.id)
+        this.casts = await this.$store.dispatch("getShowCast", this.id);
       } catch (error) {}
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -52,7 +65,7 @@ export default {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  div {
+  button {
     display: flex;
     flex-direction: row;
     font-size: x-small;
@@ -61,8 +74,11 @@ export default {
     align-items: center;
     background: $color-yellow-alpha;
     border-radius: 10px;
-    box-shadow: 0px 0px 6px 1px $color-mint;
+    box-shadow: 0px 2px 2px 0px gray;
     transition: all 0.5s cubic-bezier(0.445, 0.05, 0.55, 0.95);
+    padding: 0px;
+    outline: none;
+    border: none;
     cursor: pointer;
     &:hover {
       scale: 1.3;

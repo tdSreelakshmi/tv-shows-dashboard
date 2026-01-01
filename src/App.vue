@@ -6,7 +6,7 @@
 import DashboardHeader from "./components/DashboardHeader.vue";
 
 export default {
-  components: { DashboardHeader },
+  components: { DashboardHeader }
 };
 </script>
 <style lang="scss">

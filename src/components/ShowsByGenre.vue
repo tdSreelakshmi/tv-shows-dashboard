@@ -8,7 +8,6 @@
         </button>
       </div>
     </div>
-    <!-- {{ $store.state.showsByGenre[genre] }} -->
 
     <div :class="['shows-wrapper', wrap ? 'wrap' : 'no-wrap', { center: selectedGenre }]">
       <ShowCard v-for="showId in shows" :key="showId" :id="showId" :genre="genre" />
@@ -17,12 +16,12 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from "vuex";
 
-import ShowCard from './ShowCard.vue'
+import ShowCard from "./ShowCard.vue";
 export default {
   components: { ShowCard },
-  name: 'ShowsByGenre',
+  name: "ShowsByGenre",
   props: {
     genre: String,
     wrap: Boolean
@@ -30,28 +29,28 @@ export default {
   data() {
     return {
       showAll: false
-    }
+    };
   },
   computed: {
-    ...mapState(['showsByGenre', 'selectedGenre']),
+    ...mapState(["showsByGenre", "selectedGenre"]),
 
     shows() {
       return this.selectedGenre && this.showAll
         ? this.showsByGenre[this.genre]
-        : [...this.showsByGenre[this.genre].slice(0, 10)]
+        : [...this.showsByGenre[this.genre].slice(0, 10)];
     }
   },
   mounted() {
     setTimeout(() => {
-      this.showAll = true
-    }, 10)
+      this.showAll = true;
+    }, 10);
   },
   methods: {
     selectGenre(genre) {
-      this.$store.commit('SELECT_GENRE', genre)
+      this.$store.commit("SELECT_GENRE", genre);
     }
   }
-}
+};
 </script>
 
 <style lang="scss" scoped>
