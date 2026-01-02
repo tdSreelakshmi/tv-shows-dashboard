@@ -34,7 +34,7 @@ export async function addShows(shows) {
     const transaction = database.transaction("shows", "readwrite");
     const store = transaction.objectStore("shows");
     for (const [id, show] of Object.entries(shows)) {
-      store.put({ id, shows: show });
+      store.put({ id, shows: JSON.parse(JSON.stringify(show)) });
     }
 
     transaction.oncomplete = () => resolve();
@@ -51,7 +51,7 @@ export async function addGenres(genres) {
     for (const [name, showIds] of Object.entries(genres)) {
       store.put({
         name,
-        ids: showIds
+        ids: JSON.parse(JSON.stringify(showIds))
       });
     }
 

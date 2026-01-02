@@ -48,6 +48,7 @@
 import PageLoader from "../loaders/PageLoader.vue";
 export default {
   components: { PageLoader },
+  name: "ShowsByPerson",
   props: {
     id: Number,
     showId: String
@@ -102,7 +103,7 @@ export default {
 
 <style lang="scss" scoped>
 h3 {
-  margin: 8px;
+  margin: 0px;
 }
 .close-button {
   height: 40px;
@@ -130,7 +131,7 @@ h3 {
 .person-info-wrapper {
   position: fixed;
   background: white;
-  max-height: 90dvh;
+  max-height: 95dvh;
   height: fit-content;
   width: 90vw;
   max-width: 400px;
@@ -202,7 +203,7 @@ img {
 
 @media screen and (max-width: 620px) {
   .person-info {
-    gap: 8px;
+    gap: 4px;
 
     & img {
       width: 160px;

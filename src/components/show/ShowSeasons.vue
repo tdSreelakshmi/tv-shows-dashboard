@@ -111,6 +111,7 @@ h4 {
   align-items: flex-start;
   margin: 16px 0px;
   width: 100%;
+  gap: 8px;
   h2 {
     margin: 8px 0px;
   }

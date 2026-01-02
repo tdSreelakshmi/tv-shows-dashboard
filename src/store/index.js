@@ -135,13 +135,12 @@ export default createStore({
           if (shows.length > 0 && genres && Object.keys(genres).length > 0) {
             commit("SET_SHOWS", shows);
             commit("SET_GENRES", genres);
-            return;
           }
         }
       } catch (err) {
         console.log("Failed to read IndexedDB:", err);
       }
-      let page = Math.floor((shows[shows.length - 1]?.id || 0) / 250);
+      let page = Math.floor(shows.length / 250);
       state.hasMore = true;
       let allPagesFetched = true;
       while (state.hasMore) {

@@ -90,7 +90,7 @@ nav {
   height: fit-content;
   background: transparent;
   z-index: 10;
-  padding: 4px 2%;
+  padding: 4px 5%;
   justify-content: space-between;
   top: 16px;
   background: black;

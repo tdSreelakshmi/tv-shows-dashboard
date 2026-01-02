@@ -19,6 +19,10 @@ const routes = [
     path: "/search",
     name: "SearchShow",
     component: SearchShow
+  },
+  {
+    path: "/:noFound(.*)*",
+    redirect: "/"
   }
 ];
 

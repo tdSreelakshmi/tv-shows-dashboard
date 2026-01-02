@@ -1,9 +1,5 @@
 <template>
-  <router-link
-    :id="`card-${genre}-${id}`"
-    class="show-card"
-    :to="'/show/' + (id ?? this.showInfo.id)"
-  >
+  <router-link :id="cardId" class="show-card" :to="'/show/' + (id ?? this.showInfo.id)">
     <img
       v-if="showImage"
       loading="lazy"
@@ -14,9 +10,9 @@
       :alt="showInfo?.name + '-img'"
     />
     <ImageLoader v-else />
-    <span v-if="showInfo.rating.average">
+    <span v-if="showImage && showInfo.rating.average">
       {{ showInfo.rating.average }}
-      <img src="../assets/star.svg" alt="rating" />
+      <img src="@/assets/star.svg" alt="rating" />
     </span>
     <div class="text">
       <p>
@@ -48,13 +44,16 @@ export default {
   },
   computed: {
     ...mapGetters(["getShowById"]),
-    ...mapState(["scrollPosition", "screenHeight"]),
+    ...mapState(["scrollPosition", "screenHeight", "selectedGenre"]),
     showImage() {
       return (
         this.showInfo?.image?.medium &&
-        this.position > this.scrollPosition - 400 &&
+        this.position > this.scrollPosition - 800 &&
         this.position < this.scrollPosition + this.screenHeight
       );
+    },
+    cardId() {
+      return `card${this.selectedGenre ? "-all" : ""}-${this.showInfo.id}`;
     }
   },
   created() {
@@ -62,8 +61,8 @@ export default {
     else this.showInfo = this.show;
   },
   mounted() {
-    const card = document.getElementById(`card-${this.genre}-${this.id}`);
-    this.position = card.offsetTop;
+    const card = document.getElementById(this.cardId);
+    if (card) this.position = card.offsetTop;
   }
 };
 </script>
