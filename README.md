@@ -1,6 +1,6 @@
 # Show Glance
 
-**Show Glance** is a TV show discovery application. It allows users to browse top-rated shows by genre, search for specific titles, and view detailed information about shows, cast members and episodes.
+**Show Glance** is a TV show discovery application. It allows users to browse shows by genre, search for specific titles, and view detailed information about shows, cast members and episodes.
 
 ---
 ### Live Demo
@@ -11,18 +11,10 @@ https://social-app-c0037.web.app/
 ---
 
 ## Features
-
-- **Curated Discovery**  
-  Browse shows automatically categorised by genre and sorted by popularity or rating.
-
-- **Deep Search**  
-  Search functionality to find any show in the TVMaze database.
-
-- **Cast & Character Insights**  
-  Explore detailed cast lists and see other shows featuring your selected actor.
-
-- **Season & Episode Guide**  
-  View season list, including episode summaries.
+- Browse shows automatically categorised by genre and sorted by popularity or rating.
+- Search functionality to find any show in the TVMaze database.
+- Explore detailed cast lists and see other shows featuring selected actor.
+- View season list, including episode summaries.
 ---
 
 ## Architectural Overview
@@ -43,7 +35,7 @@ https://social-app-c0037.web.app/
 
 ## Prerequisites
 
-To run Show Glance locally, ensure your environment meets the following requirements:
+To run the project locally, ensure your environment meets the following requirements:
 
 - **Node.js:** v22.18.0  
 - **NPM:** v10.9.3  
@@ -63,7 +55,7 @@ npm install
 ```
 ## Development
 
-Run the local development server with hot reload enabled:
+Run the local development server:
 
 ```bash
 npm run serve
